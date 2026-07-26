@@ -11,6 +11,7 @@ export function AppShell({
   children,
   wide = false,
   embed = false,
+  fill = false,
 }: {
   breadcrumb: { label: string; href?: string; icon?: string | null }[];
   actions?: React.ReactNode;
@@ -19,19 +20,23 @@ export function AppShell({
   /** Renders the bare content for embedding inside a Notion page: no top bar,
       no gutters, transparent background. The host page supplies all of that. */
   embed?: boolean;
+  /** The page manages its own scrolling and must fit exactly one viewport.
+      Needs a *definite* height — with min-height the flex children can grow
+      past the viewport instead of scrolling internally. */
+  fill?: boolean;
 }) {
   if (embed) {
     return (
-      <div className="flex min-h-dvh flex-col">
+      <div className={`flex flex-col ${fill ? "h-dvh overflow-hidden" : "min-h-dvh"}`}>
         <EmbedMode />
-        <main className="nf-page nf-page--embed flex flex-1 flex-col">{children}</main>
+        <main className="nf-page nf-page--embed flex min-h-0 flex-1 flex-col">{children}</main>
       </div>
     );
   }
 
   const crumbs = breadcrumb;
   return (
-    <div className={`flex flex-col bg-[var(--nf-bg)] ${embed ? "min-h-dvh" : "min-h-dvh"}`}>
+    <div className={`flex flex-col bg-[var(--nf-bg)] ${fill ? "h-dvh overflow-hidden" : "min-h-dvh"}`}>
       <header className="sticky top-0 z-20 flex h-[45px] shrink-0 items-center gap-1 bg-[var(--nf-bg)] px-3 sm:px-6">
         <nav className="flex min-w-0 flex-1 items-center gap-0.5 text-[14px]">
           {crumbs.map((crumb, i) => (
@@ -65,7 +70,11 @@ export function AppShell({
         </nav>
         {actions ? <div className="flex shrink-0 items-center gap-1">{actions}</div> : null}
       </header>
-      <main className={`nf-page flex-1 ${wide ? "!max-w-[1100px]" : ""}`}>{children}</main>
+      <main
+        className={`nf-page flex min-h-0 flex-1 flex-col ${wide ? "!max-w-[1100px]" : ""}`}
+      >
+        {children}
+      </main>
     </div>
   );
 }

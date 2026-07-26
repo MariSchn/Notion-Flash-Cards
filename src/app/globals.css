@@ -101,6 +101,10 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* The embed makes the document transparent so it can blend into the host
+     page. Opened directly in a dark browser that would leave the default white
+     canvas behind dark text, so let the canvas follow the theme too. */
+  color-scheme: light dark;
 }
 
 body {
@@ -243,14 +247,21 @@ html[data-embed="1"] body {
   padding: 7px 4px;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: inset 0 0 0 1px var(--nf-border-strong);
-  transition: background-color 100ms ease;
+  /* Filled by default. It must also be opaque: the row sits above the
+     scrolling answer, and a transparent button would show content through it. */
+  background: var(--nf-bg-gray);
+  transition: box-shadow 100ms ease;
 }
-.nf-grade:hover { background: var(--nf-hover); }
-.nf-grade--red:hover { background: var(--nf-bg-red); }
-.nf-grade--orange:hover { background: var(--nf-bg-orange); }
-.nf-grade--blue:hover { background: var(--nf-bg-blue); }
-.nf-grade--green:hover { background: var(--nf-bg-green); }
+.nf-grade--red { background: var(--nf-bg-red); }
+.nf-grade--orange { background: var(--nf-bg-orange); }
+.nf-grade--blue { background: var(--nf-bg-blue); }
+.nf-grade--green { background: var(--nf-bg-green); }
+
+/* Hover deepens the existing tint instead of swapping colour: the overlay
+   token darkens in light mode and lightens in dark, so one rule covers both. */
+.nf-grade:hover {
+  box-shadow: inset 0 0 0 999px var(--nf-hover);
+}
 
 .nf-link {
   color: inherit;

@@ -216,6 +216,7 @@ function StudyPage() {
     <AppShell
       breadcrumb={breadcrumb}
       embed={embed}
+      fill
       actions={
         <span className="px-2 text-[13px] tabular-nums text-[var(--nf-text-secondary)]">
           {remaining} left
@@ -252,8 +253,11 @@ function StudyPage() {
         ) : null}
       </div>
 
-      <div className={`flex flex-1 flex-col ${embed ? "" : "min-h-[calc(100dvh-11rem)]"}`}>
-        <div ref={scrollRef} className={`nf-scroll flex-1 overflow-y-auto ${embed ? "py-5" : "py-8"}`}>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div
+          ref={scrollRef}
+          className={`nf-scroll min-h-0 flex-1 overflow-y-auto ${embed ? "py-5" : "py-8"}`}
+        >
           {current.sectionTitle ? (
             <p className="mb-2 text-[14px] text-[var(--nf-text-secondary)]">{current.sectionTitle}</p>
           ) : null}
@@ -273,11 +277,7 @@ function StudyPage() {
           ) : null}
         </div>
 
-        <div
-          className={`sticky bottom-0 border-t border-[var(--nf-border)] py-3 ${
-            embed ? "" : "bg-[var(--nf-bg)]/90 backdrop-blur-sm"
-          }`}
-        >
+        <div className="shrink-0 border-t border-[var(--nf-border)] bg-[var(--nf-bg)] py-3">
           {revealed ? (
             <div className="grid grid-cols-4 gap-1.5">
               {GRADES.map(({ grade: value, label, key, className }) => (
