@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Button, Callout, Chip, EmptyState, Input, Spinner } from "@/components/ui";
-import { formatRelative } from "@/lib/format";
+import { formatPath, formatRelative } from "@/lib/format";
 import type { Project } from "@/lib/types";
 
 type ProjectRow = Project & { total: number; due: number };
@@ -110,12 +110,17 @@ export default function HomePage() {
                     {project.icon ?? "🎴"}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[15px] font-medium">{project.name}</span>
-                    <span className="block truncate text-[13px] text-[var(--nf-text-secondary)]">
-                      {project.total} card{project.total === 1 ? "" : "s"}
-                      {project.last_synced_at
-                        ? ` · synced ${formatRelative(project.last_synced_at)}`
-                        : " · never synced"}
+                    <span className="block truncate text-[16px] font-medium">{project.name}</span>
+                    <span className="block truncate text-[14px] text-[var(--nf-text-secondary)]">
+                      {[
+                        formatPath(project.breadcrumb),
+                        `${project.total} card${project.total === 1 ? "" : "s"}`,
+                        project.last_synced_at
+                          ? `synced ${formatRelative(project.last_synced_at)}`
+                          : "never synced",
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </span>
                   </span>
                   {project.due > 0 ? <Chip tone="blue">{project.due} due</Chip> : null}

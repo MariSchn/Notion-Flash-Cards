@@ -306,7 +306,95 @@ export async function parsePage(pageId: string): Promise<ParsedPage> {
     });
   }
 
-  return { title, icon, sections, cards };
+  const breadcrumb = await fetchAncestorPath(pageId);
+
+  return { title, icon, breadcrumb, sections, cards };
+}
+
+/** Pulls the title out of any page/database object shape. */
+function objectTitle(obj: unknown): string | null {
+  const o = obj as { properties?: Record<string, { type: string; title?: RichTextItemResponse[] }>; title?: RichTextItemResponse[] };
+  if (Array.isArray(o?.title)) {
+    const t = plainText(toRich(o.title));
+    if (t) return t;
+  }
+  for (const prop of Object.values(o?.properties ?? {})) {
+    if (prop.type === "title") {
+      const t = plainText(toRich(prop.title ?? []));
+      if (t) return t;
+    }
+  }
+  return null;
+}
+
+/**
+ * Walks up the parent chain to build the Notion breadcrumb, outermost first.
+ *
+ * Decks are usually all called "Flashcards", so the enclosing page is what
+ * actually tells them apart. The walk stops at the workspace root, at a depth
+ * cap, or as soon as a parent isn't shared with the integration — a partial
+ * path is more useful than none.
+ */
+type NotionParent = {
+  type: string;
+  page_id?: string;
+  block_id?: string;
+  database_id?: string;
+};
+
+export async function fetchAncestorPath(pageId: string, maxDepth = 6): Promise<string[]> {
+  const path: string[] = [];
+  let currentId = pageId;
+  let currentType: "page" | "block" = "page";
+
+  for (let depth = 0; depth < maxDepth; depth++) {
+    let parent: NotionParent | null = null;
+    try {
+      const obj =
+        currentType === "page"
+          ? await notion().pages.retrieve({ page_id: currentId })
+          : await notion().blocks.retrieve({ block_id: currentId });
+      parent = (obj as { parent?: NotionParent }).parent ?? null;
+    } catch {
+      break; // Not shared with the integration; keep what we have.
+    }
+    if (!parent || parent.type === "workspace") break;
+
+    if (parent.type === "page_id" && parent.page_id) {
+      try {
+        const page = await notion().pages.retrieve({ page_id: parent.page_id });
+        const title = objectTitle(page);
+        if (title) path.unshift(title);
+      } catch {
+        break;
+      }
+      currentId = parent.page_id;
+      currentType = "page";
+      continue;
+    }
+
+    if (parent.type === "block_id" && parent.block_id) {
+      // A page nested inside a column or toggle: keep climbing, no title here.
+      currentId = parent.block_id;
+      currentType = "block";
+      continue;
+    }
+
+    if (parent.type === "database_id" && parent.database_id) {
+      try {
+        const database = await notion().databases.retrieve({ database_id: parent.database_id });
+        const title = objectTitle(database);
+        if (title) path.unshift(title);
+      } catch {
+        // Databases may be unreadable while their pages are fine.
+      }
+      break;
+    }
+
+    break;
+  }
+
+  return path;
 }
 
 /** Resolves a fresh signed URL for a Notion-hosted image. */

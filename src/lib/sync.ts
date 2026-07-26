@@ -119,10 +119,26 @@ export async function syncProject(projectId: string, notionPageId: string): Prom
     await supabase.from("cards").update({ archived: true }).in("id", toArchive);
   }
 
-  await supabase
+  const projectUpdate = {
+    name: parsed.title,
+    icon: parsed.icon,
+    last_synced_at: new Date().toISOString(),
+  };
+  const { error: projectError } = await supabase
     .from("projects")
-    .update({ name: parsed.title, icon: parsed.icon, last_synced_at: new Date().toISOString() })
+    .update({ ...projectUpdate, breadcrumb: parsed.breadcrumb })
     .eq("id", projectId);
+
+  if (projectError) {
+    // Databases created before breadcrumbs existed lack the column. Fall back
+    // so a sync still succeeds until the migration in supabase/schema.sql runs.
+    if (/breadcrumb/i.test(projectError.message)) {
+      const { error } = await supabase.from("projects").update(projectUpdate).eq("id", projectId);
+      if (error) throw new Error(`Failed to update project: ${error.message}`);
+    } else {
+      throw new Error(`Failed to update project: ${projectError.message}`);
+    }
+  }
 
   return {
     added,

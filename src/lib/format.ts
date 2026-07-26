@@ -11,6 +11,18 @@ export function formatRelative(iso: string): string {
   return new Date(iso).toLocaleDateString();
 }
 
+/**
+ * Renders a Notion ancestor path. Keeps the deepest ancestors — those are the
+ * ones that actually distinguish two decks both named "Flashcards" — and
+ * elides the middle when the chain is long.
+ */
+export function formatPath(breadcrumb: string[] | null | undefined, maxParts = 2): string {
+  const parts = (breadcrumb ?? []).filter(Boolean);
+  if (!parts.length) return "";
+  if (parts.length <= maxParts) return parts.join(" / ");
+  return `… / ${parts.slice(-maxParts).join(" / ")}`;
+}
+
 /** Summarizes a sync result as a single sentence. */
 export function describeSync(sync: {
   added: number;

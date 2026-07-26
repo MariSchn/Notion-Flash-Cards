@@ -66,6 +66,8 @@ export type ParsedSection = {
 export type ParsedPage = {
   title: string;
   icon: string | null;
+  /** Notion ancestor titles, outermost first. Excludes the page itself. */
+  breadcrumb: string[];
   sections: ParsedSection[];
   cards: ParsedCard[];
 };
@@ -76,6 +78,7 @@ export type Project = {
   id: string;
   name: string;
   icon: string | null;
+  breadcrumb: string[] | null;
   notion_url: string;
   notion_page_id: string;
   created_at: string;

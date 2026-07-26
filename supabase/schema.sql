@@ -9,6 +9,9 @@ create table if not exists projects (
   name            text not null,
   icon            text,
   notion_page_id  text not null unique,
+  -- Notion ancestor titles, outermost first. Decks are usually all called
+  -- "Flashcards", so the parent path is what distinguishes them.
+  breadcrumb      jsonb not null default '[]'::jsonb,
   notion_url      text not null,
   created_at      timestamptz not null default now(),
   last_synced_at  timestamptz
@@ -77,3 +80,6 @@ alter table projects enable row level security;
 alter table sections enable row level security;
 alter table cards    enable row level security;
 alter table reviews  enable row level security;
+
+-- Migration for databases created before breadcrumbs existed:
+alter table projects add column if not exists breadcrumb jsonb not null default '[]'::jsonb;

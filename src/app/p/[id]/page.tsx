@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState, useSyncExternalSto
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { Button, Callout, Chip, EmptyState, Spinner } from "@/components/ui";
-import { describeSync, formatRelative } from "@/lib/format";
+import { describeSync, formatPath, formatRelative } from "@/lib/format";
 import type { ProjectDetail } from "@/lib/types";
 
 export default function ProjectPageWrapper() {
@@ -141,6 +141,7 @@ function ProjectPage() {
       embed={embed}
       breadcrumb={[
         { label: "Flashcards", href: "/", icon: "🎴" },
+        ...(project.breadcrumb ?? []).map((label) => ({ label })),
         { label: project.name, icon: project.icon },
       ]}
       actions={
@@ -169,6 +170,11 @@ function ProjectPage() {
               <div className="nf-page-icon" aria-hidden>
                 {project.icon}
               </div>
+            ) : null}
+            {project.breadcrumb?.length ? (
+              <p className="mb-1 truncate text-[14px] text-[var(--nf-text-secondary)]">
+                {formatPath(project.breadcrumb, 3)}
+              </p>
             ) : null}
             <h1 className="nf-title">{project.name}</h1>
           </>
