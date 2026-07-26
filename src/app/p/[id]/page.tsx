@@ -141,7 +141,9 @@ function ProjectPage() {
       embed={embed}
       breadcrumb={[
         { label: "Flashcards", href: "/", icon: "🎴" },
-        ...(project.breadcrumb ?? []).map((label) => ({ label })),
+        // Only the immediate parent: the full path is already spelled out
+        // above the title, and more crumbs just shrink each other to ellipses.
+        ...(project.breadcrumb ?? []).slice(-1).map((label) => ({ label })),
         { label: project.name, icon: project.icon },
       ]}
       actions={
@@ -181,13 +183,21 @@ function ProjectPage() {
         ) : null}
 
         <div
-          className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-[var(--nf-text-secondary)] ${embed ? "" : "mt-3"}`}
+          className={`flex items-center gap-2 text-[14px] text-[var(--nf-text-secondary)] ${embed ? "" : "mt-3"}`}
         >
-          <span>{stats.total} cards</span>
-          <span>{stats.due} due</span>
-          <span>{stats.unseen} new</span>
-          <span>
-            {project.last_synced_at ? `Synced ${formatRelative(project.last_synced_at)}` : "Never synced"}
+          {/* One muted line with middle dots, the way Notion writes metadata —
+              not a row of stat columns. The due count is deliberately absent:
+              it already reads on the primary button. */}
+          <span className="min-w-0 truncate">
+            {[
+              `${stats.total} card${stats.total === 1 ? "" : "s"}`,
+              stats.unseen > 0 ? `${stats.unseen} new` : null,
+              project.last_synced_at
+                ? `synced ${formatRelative(project.last_synced_at)}`
+                : "never synced",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
           </span>
           {embed ? (
             <button
@@ -232,10 +242,14 @@ function ProjectPage() {
                 disabled={dueCount === 0}
                 onClick={() => router.push(studyHref("due"))}
               >
-                {dueCount > 0 ? `Study ${dueCount} due` : "Nothing due"}
+                {dueCount > 0 ? `Study ${dueCount} due` : "Nothing due today"}
               </Button>
-              <Button onClick={() => router.push(studyHref("all"))} disabled={totalCount === 0}>
-                Cram all {totalCount}
+              <Button
+                onClick={() => router.push(studyHref("all"))}
+                disabled={totalCount === 0}
+                title="Go through every card in random order, ignoring the review schedule"
+              >
+                Practice all {totalCount}
               </Button>
               {selected.size > 0 ? (
                 <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
@@ -245,11 +259,12 @@ function ProjectPage() {
             </div>
             {selected.size > 0 ? (
               <p className="mt-2 text-[14px] text-[var(--nf-text-secondary)]">
-                Studying {selected.size} selected {selected.size === 1 ? "topic" : "topics"}.
+                Limited to {selected.size} of {sections.length}{" "}
+                {sections.length === 1 ? "topic" : "topics"}.
               </p>
             ) : (
               <p className="mt-2 text-[14px] text-[var(--nf-text-secondary)]">
-                Studying the whole deck. Pick topics below to narrow it down.
+                Covering every topic. Tick one below to narrow it down.
               </p>
             )}
 

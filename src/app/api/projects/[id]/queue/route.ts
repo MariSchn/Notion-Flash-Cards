@@ -11,11 +11,11 @@ const MAX_SESSION = 300;
  * Builds a study queue.
  *
  * `mode=due`  — only cards scheduled for now or earlier (the default).
- * `mode=all`  — every card, ignoring the schedule (cram mode).
+ * `mode=all`  — every card, ignoring the schedule (practice mode).
  * `sections`  — comma-separated section ids; omitted means the whole project.
  *
- * Reviews still update the SM-2 schedule in cram mode, so cramming is never
- * wasted work.
+ * Reviews still update the SM-2 schedule in practice mode, so practising
+ * off-schedule is never wasted work.
  */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: slug } = await params;

@@ -153,7 +153,7 @@ function StudyPage() {
   const breadcrumb = [
     { label: "Flashcards", href: "/", icon: "🎴" },
     { label: deckName, href: `/p/${id}` },
-    { label: mode === "all" ? "Cram" : "Review" },
+    { label: mode === "all" ? "Practice" : "Review" },
   ];
 
   if (error) {
@@ -186,7 +186,7 @@ function StudyPage() {
           description={
             isFinished
               ? `${answered} answer${answered === 1 ? "" : "s"}, ${Math.round((correct / answered) * 100)}% recalled. Every card is scheduled for its next review.`
-              : "Everything in this selection is scheduled for later. Try cram mode to go through it anyway."
+              : "Everything here is scheduled for a later day. You can still practice it now."
           }
           action={
             <div className="flex gap-2">
@@ -202,7 +202,7 @@ function StudyPage() {
                     router.push(`/p/${id}/study?mode=all${suffix}`)
                   }
                 >
-                  Cram instead
+                  Practice anyway
                 </Button>
               ) : null}
             </div>

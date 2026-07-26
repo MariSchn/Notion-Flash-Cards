@@ -35,7 +35,12 @@ export function AppShell({
       <header className="sticky top-0 z-20 flex h-[45px] shrink-0 items-center gap-1 bg-[var(--nf-bg)] px-3 sm:px-6">
         <nav className="flex min-w-0 flex-1 items-center gap-0.5 text-[14px]">
           {crumbs.map((crumb, i) => (
-            <span key={i} className="flex min-w-0 items-center gap-0.5">
+            <span
+              key={i}
+              className={`flex items-center gap-0.5 ${
+                i === crumbs.length - 1 ? "shrink-0" : "min-w-0 shrink"
+              }`}
+            >
               {i > 0 ? (
                 <span className="px-0.5 text-[var(--nf-text-tertiary)]" aria-hidden>
                   /
