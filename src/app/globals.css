@@ -1,0 +1,194 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+/*
+ * Notion's actual design tokens: the same greys, blues, type scale and
+ * spacing the app uses, so an embedded page is visually continuous with the
+ * Notion document around it.
+ */
+:root {
+  --nf-bg: #ffffff;
+  --nf-bg-secondary: #f7f7f5;
+  --nf-text: rgb(55, 53, 47);
+  --nf-text-secondary: rgba(55, 53, 47, 0.65);
+  --nf-text-tertiary: rgba(55, 53, 47, 0.45);
+  --nf-border: rgba(55, 53, 47, 0.09);
+  --nf-border-strong: rgba(55, 53, 47, 0.16);
+  --nf-hover: rgba(55, 53, 47, 0.06);
+  --nf-active: rgba(55, 53, 47, 0.11);
+  --nf-blue: #2383e2;
+  --nf-blue-hover: #1a6dbd;
+  --nf-code-bg: rgba(135, 131, 120, 0.15);
+  --nf-code-text: #eb5757;
+  --nf-shadow: 0 0 0 1px rgba(15, 15, 15, 0.05), 0 2px 4px rgba(15, 15, 15, 0.1);
+  --nf-shadow-lg: 0 0 0 1px rgba(15, 15, 15, 0.05), 0 3px 6px rgba(15, 15, 15, 0.1),
+    0 9px 24px rgba(15, 15, 15, 0.2);
+
+  --nf-red: #e03e3e;
+  --nf-orange: #d9730d;
+  --nf-yellow: #cb912f;
+  --nf-green: #448361;
+  --nf-purple: #9065b0;
+  --nf-pink: #c14c8a;
+  --nf-brown: #9f6b53;
+  --nf-gray: #787774;
+
+  --nf-bg-gray: rgba(241, 241, 239, 1);
+  --nf-bg-brown: rgba(244, 238, 238, 1);
+  --nf-bg-orange: rgba(251, 236, 221, 1);
+  --nf-bg-yellow: rgba(251, 243, 219, 1);
+  --nf-bg-green: rgba(237, 243, 236, 1);
+  --nf-bg-blue: rgba(231, 243, 248, 1);
+  --nf-bg-purple: rgba(244, 240, 247, 0.8);
+  --nf-bg-pink: rgba(249, 238, 243, 0.8);
+  --nf-bg-red: rgba(253, 235, 236, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nf-bg: #191919;
+    --nf-bg-secondary: #202020;
+    --nf-text: rgba(255, 255, 255, 0.81);
+    --nf-text-secondary: rgba(255, 255, 255, 0.46);
+    --nf-text-tertiary: rgba(255, 255, 255, 0.28);
+    --nf-border: rgba(255, 255, 255, 0.075);
+    --nf-border-strong: rgba(255, 255, 255, 0.13);
+    --nf-hover: rgba(255, 255, 255, 0.055);
+    --nf-active: rgba(255, 255, 255, 0.1);
+    --nf-blue: #2383e2;
+    --nf-blue-hover: #4a9eea;
+    --nf-code-bg: rgba(135, 131, 120, 0.15);
+    --nf-code-text: #ff7369;
+    --nf-shadow: 0 0 0 1px rgba(255, 255, 255, 0.075), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --nf-shadow-lg: 0 0 0 1px rgba(255, 255, 255, 0.075), 0 3px 6px rgba(0, 0, 0, 0.2),
+      0 9px 24px rgba(0, 0, 0, 0.4);
+
+    --nf-red: #ff7369;
+    --nf-orange: #ffa344;
+    --nf-yellow: #ffdc49;
+    --nf-green: #4dab9a;
+    --nf-purple: #9a6dd7;
+    --nf-pink: #e255a1;
+    --nf-brown: #937264;
+    --nf-gray: #979a9b;
+
+    --nf-bg-gray: rgba(47, 47, 47, 1);
+    --nf-bg-brown: rgba(74, 50, 40, 1);
+    --nf-bg-orange: rgba(92, 59, 35, 1);
+    --nf-bg-yellow: rgba(86, 67, 40, 1);
+    --nf-bg-green: rgba(36, 61, 48, 1);
+    --nf-bg-blue: rgba(20, 58, 78, 1);
+    --nf-bg-purple: rgba(60, 45, 73, 1);
+    --nf-bg-pink: rgba(78, 44, 60, 1);
+    --nf-bg-red: rgba(82, 46, 42, 1);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--nf-bg);
+  --color-bg-secondary: var(--nf-bg-secondary);
+  --color-fg: var(--nf-text);
+  --color-fg-secondary: var(--nf-text-secondary);
+  --color-fg-tertiary: var(--nf-text-tertiary);
+  --color-line: var(--nf-border);
+  --color-line-strong: var(--nf-border-strong);
+  --color-accent: var(--nf-blue);
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-mono: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--nf-bg);
+  color: var(--nf-text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+::selection {
+  background: rgba(35, 131, 226, 0.28);
+}
+
+/* Notion's scrollbar: invisible until the area is hovered. */
+.nf-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.nf-scroll:hover {
+  scrollbar-color: var(--nf-border-strong) transparent;
+}
+.nf-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.nf-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+.nf-scroll:hover::-webkit-scrollbar-thumb {
+  background: var(--nf-border-strong);
+}
+
+/* Text colors and callout/highlight backgrounds carried over from Notion. */
+.nf-c-gray { color: var(--nf-gray); }
+.nf-c-brown { color: var(--nf-brown); }
+.nf-c-orange { color: var(--nf-orange); }
+.nf-c-yellow { color: var(--nf-yellow); }
+.nf-c-green { color: var(--nf-green); }
+.nf-c-blue { color: var(--nf-blue); }
+.nf-c-purple { color: var(--nf-purple); }
+.nf-c-pink { color: var(--nf-pink); }
+.nf-c-red { color: var(--nf-red); }
+
+.nf-bg-gray { background: var(--nf-bg-gray); }
+.nf-bg-brown { background: var(--nf-bg-brown); }
+.nf-bg-orange { background: var(--nf-bg-orange); }
+.nf-bg-yellow { background: var(--nf-bg-yellow); }
+.nf-bg-green { background: var(--nf-bg-green); }
+.nf-bg-blue { background: var(--nf-bg-blue); }
+.nf-bg-purple { background: var(--nf-bg-purple); }
+.nf-bg-pink { background: var(--nf-bg-pink); }
+.nf-bg-red { background: var(--nf-bg-red); }
+
+.nf-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--nf-border-strong);
+  text-underline-offset: 2px;
+}
+.nf-link:hover {
+  text-decoration-color: var(--nf-text-secondary);
+}
+
+.nf-code {
+  font-family: var(--font-mono);
+  font-size: 85%;
+  background: var(--nf-code-bg);
+  color: var(--nf-code-text);
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+  line-height: normal;
+}
+
+/* KaTeX inherits body color rather than its own near-black. */
+.katex { color: inherit; font-size: 1.05em; }
+.katex-display { margin: 0.5em 0; overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+
+@keyframes nf-fade-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+.nf-reveal {
+  animation: nf-fade-in 140ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-reveal { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}
