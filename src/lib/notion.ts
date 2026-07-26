@@ -217,7 +217,7 @@ export async function parsePage(pageId: string): Promise<ParsedPage> {
   if ("properties" in page) {
     for (const prop of Object.values(page.properties)) {
       if (prop.type === "title") {
-        const t = plainText(toRich(prop.title));
+        const t = plainText(toRich(prop.title)).trim();
         if (t) title = t;
         break;
       }
@@ -256,7 +256,7 @@ export async function parsePage(pageId: string): Promise<ParsedPage> {
             : block.type === "heading_2"
               ? { level: 2, rich: block.heading_2.rich_text }
               : { level: 3, rich: block.heading_3.rich_text };
-        openSection(block.id, plainText(toRich(heading.rich)), heading.level);
+        openSection(block.id, plainText(toRich(heading.rich)).trim(), heading.level);
         // A toggleable heading's children are section content, not an answer.
         if (block.has_children && depth < 3) await walk(block.id, depth + 1);
         continue;
@@ -315,12 +315,12 @@ export async function parsePage(pageId: string): Promise<ParsedPage> {
 function objectTitle(obj: unknown): string | null {
   const o = obj as { properties?: Record<string, { type: string; title?: RichTextItemResponse[] }>; title?: RichTextItemResponse[] };
   if (Array.isArray(o?.title)) {
-    const t = plainText(toRich(o.title));
+    const t = plainText(toRich(o.title)).trim();
     if (t) return t;
   }
   for (const prop of Object.values(o?.properties ?? {})) {
     if (prop.type === "title") {
-      const t = plainText(toRich(prop.title ?? []));
+      const t = plainText(toRich(prop.title ?? [])).trim();
       if (t) return t;
     }
   }
