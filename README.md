@@ -57,11 +57,21 @@ page lists ready-to-paste links under **Embed in Notion**:
 
 | URL | What it shows |
 | --- | --- |
-| `/p/<notion-page-id>?embed=1` | Deck overview with the topic picker |
-| `/p/<notion-page-id>/study?mode=due&embed=1` | Jumps straight into today's due cards |
+| `/p/<notion-page-id>?embed=1` | **Recommended.** Topic picker + study controls; studying happens inside the same iframe |
+| `/p/<notion-page-id>/study?mode=due&embed=1` | Skips the picker and goes straight into today's due cards |
 
-In Notion, type `/embed`, paste the link, and choose **Embed link**. `embed=1`
-drops the breadcrumb so the iframe doesn't duplicate navigation.
+In Notion, type `/embed`, paste the link, and choose **Embed link** (not
+*Create or upload HTML* — that block only hosts a static file and cannot run
+this app).
+
+Embed the **first** URL unless you specifically want to bypass topic selection.
+It keeps the subtopic checkboxes available, and the study view it opens has a
+“← Topics” link back to the picker. The second URL has no way back.
+
+`embed=1` is a genuinely different presentation, not just a trimmed web page:
+no top bar, no page title or icon (the surrounding Notion page already provides
+the heading), no side gutters, a transparent background so it sits flush on the
+host page, and no destructive actions.
 
 Links are keyed by the **Notion page id**, so they survive deleting and re-adding
 a deck. The internal project id (`/p/<uuid>`) works too.

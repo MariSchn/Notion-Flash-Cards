@@ -12,16 +12,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   { variant = "secondary", size = "md", className = "", ...props },
   ref,
 ) {
+  // Notion's buttons: 4px radius, 500 weight, and an *inset* hairline ring
+  // rather than a border, so the control keeps its exact box size on hover.
   const base =
     "inline-flex items-center justify-center gap-1.5 rounded-[4px] font-medium whitespace-nowrap transition-colors duration-100 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--nf-blue)]";
   const sizes = {
-    sm: "h-7 px-2 text-[13px]",
+    sm: "h-7 px-2 text-[14px]",
     md: "h-8 px-3 text-[14px]",
   };
   const variants = {
     primary: "bg-[var(--nf-blue)] text-white hover:bg-[var(--nf-blue-hover)]",
     secondary:
-      "bg-[var(--nf-bg)] text-[var(--nf-text)] shadow-[0_0_0_1px_var(--nf-border-strong)] hover:bg-[var(--nf-hover)]",
+      "text-[var(--nf-text)] shadow-[inset_0_0_0_1px_var(--nf-border-strong)] hover:bg-[var(--nf-hover)]",
     ghost: "text-[var(--nf-text-secondary)] hover:bg-[var(--nf-hover)] hover:text-[var(--nf-text)]",
     danger: "text-[var(--nf-red)] hover:bg-[var(--nf-hover)]",
   };
@@ -39,7 +41,7 @@ export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTML
     return (
       <input
         ref={ref}
-        className={`h-8 w-full rounded-[4px] bg-[var(--nf-bg-secondary)] px-2.5 text-[14px] text-[var(--nf-text)] shadow-[inset_0_0_0_1px_var(--nf-border-strong)] outline-none transition-shadow placeholder:text-[var(--nf-text-tertiary)] focus:shadow-[inset_0_0_0_1px_var(--nf-blue),0_0_0_2px_rgba(35,131,226,0.2)] ${className}`}
+        className={`h-8 w-full rounded-[4px] bg-[var(--nf-bg-secondary)] px-2.5 text-[14px] text-[var(--nf-text)] shadow-[inset_0_0_0_1px_var(--nf-border)] outline-none transition-shadow placeholder:text-[var(--nf-text-tertiary)] focus:bg-transparent focus:shadow-[inset_0_0_0_1px_var(--nf-blue),0_0_0_2px_rgba(35,131,226,0.2)] ${className}`}
         {...props}
       />
     );

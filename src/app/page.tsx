@@ -57,9 +57,12 @@ export default function HomePage() {
 
   return (
     <AppShell breadcrumb={[{ label: "Flashcards", icon: "🎴" }]}>
-      <div className="py-10">
-        <h1 className="mb-1 text-[32px] font-bold leading-[1.2] tracking-[-0.01em]">Flashcards</h1>
-        <p className="mb-8 text-[15px] text-[var(--nf-text-secondary)]">
+      <div className="pb-16 pt-8">
+        <div className="nf-page-icon" aria-hidden>
+          🎴
+        </div>
+        <h1 className="nf-title mb-2">Flashcards</h1>
+        <p className="mb-8 text-[16px] text-[var(--nf-text-secondary)]">
           Turn any Notion page of toggles into a spaced-repetition deck.
         </p>
 

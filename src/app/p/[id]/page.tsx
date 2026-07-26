@@ -160,19 +160,40 @@ function ProjectPage() {
         </>
       }
     >
-      <div className="py-10">
-        <h1 className="flex items-center gap-3 text-[32px] font-bold leading-[1.2] tracking-[-0.01em]">
-          {project.icon ? <span aria-hidden>{project.icon}</span> : null}
-          <span className="min-w-0 break-words">{project.name}</span>
-        </h1>
+      <div className={embed ? "pb-6 pt-1" : "pb-16 pt-8"}>
+        {/* Inside Notion the surrounding page already carries the heading, so
+            the embed starts straight at the stats and the study controls. */}
+        {!embed ? (
+          <>
+            {project.icon ? (
+              <div className="nf-page-icon" aria-hidden>
+                {project.icon}
+              </div>
+            ) : null}
+            <h1 className="nf-title">{project.name}</h1>
+          </>
+        ) : null}
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-[var(--nf-text-secondary)]">
+        <div
+          className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-[var(--nf-text-secondary)] ${embed ? "" : "mt-3"}`}
+        >
           <span>{stats.total} cards</span>
           <span>{stats.due} due</span>
           <span>{stats.unseen} new</span>
           <span>
             {project.last_synced_at ? `Synced ${formatRelative(project.last_synced_at)}` : "Never synced"}
           </span>
+          {embed ? (
+            <button
+              type="button"
+              onClick={resync}
+              disabled={syncing}
+              className="ml-auto inline-flex h-6 items-center gap-1 rounded-[4px] px-1.5 text-[14px] transition-colors hover:bg-[var(--nf-hover)] hover:text-[var(--nf-text)] disabled:opacity-40"
+            >
+              {syncing ? <Spinner /> : <span aria-hidden>⟳</span>}
+              {syncing ? "Syncing…" : "Resync"}
+            </button>
+          ) : null}
         </div>
 
         {notice ? (
@@ -199,7 +220,7 @@ function ProjectPage() {
           />
         ) : (
           <>
-            <div className="mt-7 flex flex-wrap items-center gap-2">
+            <div className={`flex flex-wrap items-center gap-2 ${embed ? "mt-4" : "mt-7"}`}>
               <Button
                 variant="primary"
                 disabled={dueCount === 0}
@@ -217,18 +238,16 @@ function ProjectPage() {
               ) : null}
             </div>
             {selected.size > 0 ? (
-              <p className="mt-2 text-[13px] text-[var(--nf-text-secondary)]">
+              <p className="mt-2 text-[14px] text-[var(--nf-text-secondary)]">
                 Studying {selected.size} selected {selected.size === 1 ? "topic" : "topics"}.
               </p>
             ) : (
-              <p className="mt-2 text-[13px] text-[var(--nf-text-secondary)]">
+              <p className="mt-2 text-[14px] text-[var(--nf-text-secondary)]">
                 Studying the whole deck. Pick topics below to narrow it down.
               </p>
             )}
 
-            <h2 className="mb-1 mt-9 text-[13px] font-semibold uppercase tracking-[0.05em] text-[var(--nf-text-tertiary)]">
-              Topics
-            </h2>
+            <h2 className={`mb-2 ${embed ? "nf-label mt-6" : "nf-h2 mt-10"}`}>Topics</h2>
             <ul>
               {sections.map((section) => {
                 const isSelected = selected.has(section.id);
@@ -245,24 +264,24 @@ function ProjectPage() {
                       style={{ paddingLeft: `${8 + (section.level - 1) * 20}px` }}
                     >
                       <span
-                        className={`flex h-[15px] w-[15px] shrink-0 items-center justify-center rounded-[3px] text-[10px] leading-none ${
+                        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] text-[11px] leading-none ${
                           isSelected || inheritedFromParent
                             ? "bg-[var(--nf-blue)] text-white"
-                            : "border border-[var(--nf-border-strong)]"
+                            : "shadow-[inset_0_0_0_1px_var(--nf-border-strong)]"
                         }`}
                         aria-hidden
                       >
                         {isSelected || inheritedFromParent ? "✓" : ""}
                       </span>
                       <span
-                        className={`min-w-0 flex-1 truncate ${
-                          section.level === 1 ? "text-[15px] font-medium" : "text-[14px]"
+                        className={`min-w-0 flex-1 truncate text-[16px] ${
+                          section.level === 1 ? "font-medium" : ""
                         }`}
                       >
                         {section.title}
                       </span>
                       {section.due > 0 ? <Chip tone="blue">{section.due}</Chip> : null}
-                      <span className="w-10 shrink-0 text-right text-[13px] text-[var(--nf-text-tertiary)] tabular-nums">
+                      <span className="w-10 shrink-0 text-right text-[14px] text-[var(--nf-text-tertiary)] tabular-nums">
                         {section.total}
                       </span>
                     </button>
@@ -271,13 +290,18 @@ function ProjectPage() {
               })}
             </ul>
 
-            {!embed ? <EmbedPanel projectId={project.id} notionPageId={project.notion_page_id} /> : null}
-
-            <div className="mt-12 border-t border-[var(--nf-border)] pt-4">
-              <Button variant="danger" size="sm" onClick={remove}>
-                Delete deck
-              </Button>
-            </div>
+            {/* Embed-only decks stay read-only: no embed helper, and no
+                destructive delete sitting inside someone's notes. */}
+            {!embed ? (
+              <>
+                <EmbedPanel projectId={project.id} notionPageId={project.notion_page_id} />
+                <div className="mt-12 border-t border-[var(--nf-border)] pt-4">
+                  <Button variant="danger" size="sm" onClick={remove}>
+                    Delete deck
+                  </Button>
+                </div>
+              </>
+            ) : null}
           </>
         )}
       </div>
@@ -314,10 +338,8 @@ function EmbedPanel({ projectId, notionPageId }: { projectId: string; notionPage
 
   return (
     <div className="mt-12 border-t border-[var(--nf-border)] pt-6">
-      <h2 className="mb-1 text-[13px] font-semibold uppercase tracking-[0.05em] text-[var(--nf-text-tertiary)]">
-        Embed in Notion
-      </h2>
-      <p className="mb-3 text-[13px] text-[var(--nf-text-secondary)]">
+      <h2 className="nf-h2 mb-2">Embed in Notion</h2>
+      <p className="mb-3 text-[14px] text-[var(--nf-text-secondary)]">
         In Notion type <code className="nf-code">/embed</code>, paste one of these, and pick “Embed
         link”.
       </p>
@@ -333,7 +355,7 @@ function EmbedPanel({ projectId, notionPageId }: { projectId: string; notionPage
           </div>
         ))}
       </div>
-      <p className="mt-2 text-[12px] text-[var(--nf-text-tertiary)]">
+      <p className="mt-2 text-[14px] text-[var(--nf-text-tertiary)]">
         {links[0].label}: full topic picker. {links[1].label}: skips straight to today’s due cards.
         Internal id: <code className="nf-code">{projectId.slice(0, 8)}</code>
       </p>

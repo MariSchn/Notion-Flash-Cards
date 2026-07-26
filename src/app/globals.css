@@ -115,6 +115,78 @@ body {
   background: rgba(35, 131, 226, 0.28);
 }
 
+/*
+ * Notion's page geometry. The content column is 900px wide with 96px of side
+ * padding on desktop (so the text measure is 708px) and 24px on narrow
+ * screens — these exact numbers are what make a page "feel" like Notion.
+ */
+.nf-page {
+  width: 100%;
+  max-width: 900px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 640px) {
+  .nf-page {
+    padding-inline: 96px;
+  }
+}
+
+/*
+ * Embedded view. Notion already supplies the page heading, the surrounding
+ * margins and the background, so the embed drops its own chrome, sheds the
+ * 96px gutters, and goes transparent to sit flush on the host page.
+ */
+.nf-page--embed {
+  max-width: none;
+  padding-inline: 0;
+}
+html[data-embed="1"],
+html[data-embed="1"] body {
+  background: transparent;
+}
+
+/* Notion's page title: 40px/700, tightened tracking, 1.2 leading. */
+.nf-title {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+  overflow-wrap: break-word;
+}
+
+/* The large emoji Notion renders above a page title. */
+.nf-page-icon {
+  font-size: 78px;
+  line-height: 1.1;
+  height: 78px;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+/* Notion's in-page heading_1 (1.875em) and heading_2 (1.5em). */
+.nf-h1 {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.nf-h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/*
+ * Notion has no uppercase letterspaced section labels — those read as a
+ * generic dashboard. Secondary headings are sentence case, 14px, medium.
+ */
+.nf-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--nf-text-secondary);
+}
+
 /* Notion's scrollbar: invisible until the area is hovered. */
 .nf-scroll {
   scrollbar-width: thin;
@@ -155,6 +227,30 @@ body {
 .nf-bg-purple { background: var(--nf-bg-purple); }
 .nf-bg-pink { background: var(--nf-bg-pink); }
 .nf-bg-red { background: var(--nf-bg-red); }
+
+/*
+ * Grading buttons. Notion's button language: inset hairline ring, 4px radius,
+ * tinted background only on hover. The colour cue stays in the label so a row
+ * of four doesn't turn into a traffic light.
+ */
+.nf-grade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border-radius: 4px;
+  padding: 7px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: inset 0 0 0 1px var(--nf-border-strong);
+  transition: background-color 100ms ease;
+}
+.nf-grade:hover { background: var(--nf-hover); }
+.nf-grade--red:hover { background: var(--nf-bg-red); }
+.nf-grade--orange:hover { background: var(--nf-bg-orange); }
+.nf-grade--blue:hover { background: var(--nf-bg-blue); }
+.nf-grade--green:hover { background: var(--nf-bg-green); }
 
 .nf-link {
   color: inherit;

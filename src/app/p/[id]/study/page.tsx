@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { NotionBlocks } from "@/components/NotionBlocks";
@@ -16,10 +17,10 @@ const REQUEUE_MIN = 3;
 const REQUEUE_MAX = 7;
 
 const GRADES: { grade: Grade; label: string; key: string; className: string }[] = [
-  { grade: 0, label: "Again", key: "1", className: "nf-c-red hover:nf-bg-red" },
-  { grade: 1, label: "Hard", key: "2", className: "nf-c-orange hover:nf-bg-orange" },
-  { grade: 2, label: "Good", key: "3", className: "nf-c-blue hover:nf-bg-blue" },
-  { grade: 3, label: "Easy", key: "4", className: "nf-c-green hover:nf-bg-green" },
+  { grade: 0, label: "Again", key: "1", className: "nf-c-red nf-grade--red" },
+  { grade: 1, label: "Hard", key: "2", className: "nf-c-orange nf-grade--orange" },
+  { grade: 2, label: "Good", key: "3", className: "nf-c-blue nf-grade--blue" },
+  { grade: 3, label: "Easy", key: "4", className: "nf-c-green nf-grade--green" },
 ];
 
 export default function StudyPageWrapper() {
@@ -221,28 +222,43 @@ function StudyPage() {
         </span>
       }
     >
-      <div
-        className="h-[2px] w-full overflow-hidden rounded-full bg-[var(--nf-hover)]"
-        role="progressbar"
-        aria-valuenow={Math.round(progress)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
+      <div className={`flex items-center gap-3 ${embed ? "pt-1" : ""}`}>
+        {/* With no breadcrumb in the embed, this is the only way back to the
+            topic picker without leaving the iframe. */}
+        {embed ? (
+          <Link
+            href={`/p/${id}?embed=1`}
+            className="inline-flex h-6 shrink-0 items-center gap-1 rounded-[4px] px-1.5 text-[14px] text-[var(--nf-text-secondary)] transition-colors hover:bg-[var(--nf-hover)] hover:text-[var(--nf-text)]"
+          >
+            <span aria-hidden>←</span> Topics
+          </Link>
+        ) : null}
         <div
-          className="h-full bg-[var(--nf-blue)] transition-[width] duration-300 ease-out"
-          style={{ width: `${progress}%` }}
-        />
+          className="h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--nf-hover)]"
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <div
+            className="h-full rounded-full bg-[var(--nf-blue)] transition-[width] duration-300 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        {embed ? (
+          <span className="shrink-0 text-[14px] tabular-nums text-[var(--nf-text-secondary)]">
+            {remaining} left
+          </span>
+        ) : null}
       </div>
 
-      <div className="flex min-h-[calc(100dvh-11rem)] flex-col">
-        <div ref={scrollRef} className="nf-scroll flex-1 overflow-y-auto py-8">
+      <div className={`flex flex-1 flex-col ${embed ? "" : "min-h-[calc(100dvh-11rem)]"}`}>
+        <div ref={scrollRef} className={`nf-scroll flex-1 overflow-y-auto ${embed ? "py-5" : "py-8"}`}>
           {current.sectionTitle ? (
-            <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--nf-text-tertiary)]">
-              {current.sectionTitle}
-            </p>
+            <p className="mb-2 text-[14px] text-[var(--nf-text-secondary)]">{current.sectionTitle}</p>
           ) : null}
 
-          <h1 className="text-[24px] font-semibold leading-[1.35] tracking-[-0.005em] sm:text-[28px]">
+          <h1 className="nf-h1">
             <RichTextView rich={current.question} />
           </h1>
 
@@ -257,7 +273,11 @@ function StudyPage() {
           ) : null}
         </div>
 
-        <div className="sticky bottom-0 border-t border-[var(--nf-border)] bg-[var(--nf-bg)]/90 py-3 backdrop-blur-sm">
+        <div
+          className={`sticky bottom-0 border-t border-[var(--nf-border)] py-3 ${
+            embed ? "" : "bg-[var(--nf-bg)]/90 backdrop-blur-sm"
+          }`}
+        >
           {revealed ? (
             <div className="grid grid-cols-4 gap-1.5">
               {GRADES.map(({ grade: value, label, key, className }) => (
@@ -265,10 +285,10 @@ function StudyPage() {
                   key={value}
                   type="button"
                   onClick={() => grade(value)}
-                  className={`flex flex-col items-center justify-center gap-0.5 rounded-[4px] py-2 text-[14px] font-medium shadow-[0_0_0_1px_var(--nf-border-strong)] transition-colors ${className}`}
+                  className={`nf-grade ${className}`}
                 >
                   <span>{label}</span>
-                  <span className="text-[11px] font-normal opacity-70 tabular-nums">
+                  <span className="text-[12px] font-normal opacity-70 tabular-nums">
                     {previewInterval(
                       {
                         interval_days: current.interval_days,
@@ -279,7 +299,7 @@ function StudyPage() {
                       value,
                     )}
                   </span>
-                  <span className="hidden text-[10px] opacity-45 sm:block">{key}</span>
+                  <span className="hidden text-[11px] opacity-40 sm:block">{key}</span>
                 </button>
               ))}
             </div>
