@@ -33,11 +33,13 @@ export async function syncProject(projectId: string, notionPageId: string): Prom
   );
 
   if (parsed.sections.length) {
+    // No `id` in the payload: the rows are matched by the onConflict target, and
+    // a mixed batch (some rows with an id, some without) would make PostgREST
+    // send an explicit null for the ones missing it instead of using the default.
     const { data: upserted, error } = await supabase
       .from("sections")
       .upsert(
         parsed.sections.map((s) => ({
-          ...(sectionIdByKey.has(s.notionBlockId) ? { id: sectionIdByKey.get(s.notionBlockId) } : {}),
           project_id: projectId,
           notion_block_id: s.notionBlockId,
           title: s.title,
@@ -91,7 +93,6 @@ export async function syncProject(projectId: string, notionPageId: string): Prom
     if (!prior) added += 1;
     else if (prior.archived) restored += 1;
     return {
-      ...(prior ? { id: prior.id } : {}),
       project_id: projectId,
       section_id: sectionIdByKey.get(card.sectionKey) ?? null,
       notion_block_id: card.notionBlockId,
